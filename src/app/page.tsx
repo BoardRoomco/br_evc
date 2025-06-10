@@ -1,5 +1,6 @@
 import { Clipboard, Mail, HelpCircle, CheckCircle } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
+import { Canvas } from '@/components/Canvas';
 
 export default function Home() {
   return (
@@ -51,11 +52,10 @@ export default function Home() {
         </button>
       </div>
 
-      {/* Main content */}
-      <main className="container mx-auto p-8 h-screen flex items-center justify-center">
-        {/* Logo placeholder - we'll add this later */}
-        <div className="w-[400px] h-[100px] opacity-20 bg-gray-200"></div>
-      </main>
+      {/* Main Content Area */}
+      <div className="w-[calc(100vw-416px)] ml-32">
+        <Canvas />
+      </div>
 
       {/* Right Sidebar */}
       <Sidebar />

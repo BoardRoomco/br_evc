@@ -29,6 +29,11 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
     }
   ];
 
+  const onDragStart = (event: React.DragEvent, component: Component) => {
+    event.dataTransfer.setData('application/reactflow', component.name);
+    event.dataTransfer.effectAllowed = 'move';
+  };
+
   if (categoryId !== 'ac-dc') {
     return null;
   }
@@ -45,6 +50,8 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
       {acDcComponents.map(component => (
         <div
           key={component.id}
+          draggable
+          onDragStart={(e) => onDragStart(e, component)}
           style={{
             width: '75%',
             display: 'flex',
