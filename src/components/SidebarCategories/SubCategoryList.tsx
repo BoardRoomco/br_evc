@@ -10,33 +10,15 @@ interface Component {
   imageUrl: string;
 }
 
-export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
-  const acDcComponents: Component[] = [
-    { 
-      id: 'ac-dc-1', 
-      name: 'AC/DC Converter 1',
-      imageUrl: '/images/ac-dc-1.svg'
-    },
-    { 
-      id: 'ac-dc-2', 
-      name: 'AC/DC Converter 2',
-      imageUrl: '/images/ac-dc-2.svg'
-    },
-    { 
-      id: 'ac-dc-3', 
-      name: 'AC/DC Converter 3',
-      imageUrl: '/images/ac-dc-3.svg'
-    }
-  ];
+interface ComponentListProps {
+  components: Component[];
+}
 
+const ComponentList = ({ components }: ComponentListProps) => {
   const onDragStart = (event: React.DragEvent, component: Component) => {
     event.dataTransfer.setData('application/reactflow', component.name);
     event.dataTransfer.effectAllowed = 'move';
   };
-
-  if (categoryId !== 'ac-dc') {
-    return null;
-  }
 
   return (
     <div style={{
@@ -47,7 +29,7 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
       gap: '8px',
       padding: '12px 0',
     }}>
-      {acDcComponents.map(component => (
+      {components.map(component => (
         <div
           key={component.id}
           draggable
@@ -94,4 +76,55 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
       ))}
     </div>
   );
+};
+
+export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
+  const acDcComponents: Component[] = [
+    { 
+      id: 'ac-dc-1', 
+      name: 'Active Front-End Rectifier',
+      imageUrl: '/images/ac-dc-1.svg'
+    },
+    { 
+      id: 'ac-dc-2', 
+      name: 'Diode Bridge Rectifier',
+      imageUrl: '/images/ac-dc-2.svg'
+    },
+    { 
+      id: 'ac-dc-3', 
+      name: 'Thyristor Rectifier',
+      imageUrl: '/images/ac-dc-3.svg'
+    }
+  ];
+
+  const dcDcComponents: Component[] = [
+    {
+      id: 'dc-dc-1',
+      name: 'Buck Converter',
+      imageUrl: '/images/dc-dc-1.svg'
+    },
+    {
+      id: 'dc-dc-2',
+      name: 'Dual Active Bridge ',
+      imageUrl: '/images/dc-dc-2.svg'
+    },
+    {
+      id: 'dc-dc-3',
+      name: 'Buck-Boost Converter',
+      imageUrl: '/images/dc-dc-3.svg'
+    },
+    {
+      id: 'dc-dc-4',
+      name: 'Flyback Converter',
+      imageUrl: '/images/dc-dc-4.svg'
+    }
+  ];
+
+  if (categoryId === 'ac-dc') {
+    return <ComponentList components={acDcComponents} />;
+  } else if (categoryId === 'dc-dc') {
+    return <ComponentList components={dcDcComponents} />;
+  }
+
+  return null;
 }; 

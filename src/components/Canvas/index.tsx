@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import ReactFlow, {
   Background,
   Controls,
@@ -13,15 +13,65 @@ import ReactFlow, {
   ConnectionMode,
   applyNodeChanges,
   applyEdgeChanges,
+  useReactFlow,
+  ReactFlowProvider,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
 
-const initialNodes: Node[] = [];
+const initialNodes: Node[] = [
+  {
+    id: 'ac-outlet',
+    type: 'default',
+    position: { x: 100, y: 300 },
+    data: { 
+      label: 'AC Outlet',
+    },
+    style: {
+      background: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      borderRadius: '8px',
+      padding: '10px',
+      width: 150,
+    }
+  },
+  {
+    id: 'internal-battery',
+    type: 'default',
+    position: { x: 400, y: 300 },
+    data: { 
+      label: 'Internal Battery',
+    },
+    style: {
+      background: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      borderRadius: '8px',
+      padding: '10px',
+      width: 150,
+    }
+  },
+  {
+    id: 'vehicle',
+    type: 'default',
+    position: { x: 700, y: 300 },
+    data: { 
+      label: 'Vehicle',
+    },
+    style: {
+      background: '#f8f9fa',
+      border: '1px solid #dee2e6',
+      borderRadius: '8px',
+      padding: '10px',
+      width: 150,
+    }
+  }
+];
+
 const initialEdges: Edge[] = [];
 
-export const Canvas = () => {
+const FlowContent = () => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
+  const { getNodes } = useReactFlow();
 
   const onNodesChange = useCallback((changes: NodeChange[]) => {
     setNodes((nds) => applyNodeChanges(changes, nds));
@@ -64,12 +114,40 @@ export const Canvas = () => {
         type: 'default',
         position,
         data: { label: type },
+        style: {
+          background: '#f8f9fa',
+          border: '1px solid #dee2e6',
+          borderRadius: '8px',
+          padding: '10px',
+          width: 150,
+        }
       };
 
       setNodes((nds) => nds.concat(newNode));
     },
     [nodes]
   );
+
+  // Handle keyboard delete
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Delete' || event.key === 'Backspace') {
+        const selectedNodes = getNodes().filter((node) => node.selected);
+        if (selectedNodes.length > 0) {
+          setNodes((nds) => nds.filter((node) => !node.selected));
+          // Also remove any connected edges
+          setEdges((eds) => eds.filter(
+            (edge) => !selectedNodes.some((node) => 
+              edge.source === node.id || edge.target === node.id
+            )
+          ));
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [getNodes]);
 
   return (
     <div className="w-full h-[calc(100vh-2rem)]">
@@ -90,5 +168,13 @@ export const Canvas = () => {
         <Controls />
       </ReactFlow>
     </div>
+  );
+};
+
+export const Canvas = () => {
+  return (
+    <ReactFlowProvider>
+      <FlowContent />
+    </ReactFlowProvider>
   );
 }; 
