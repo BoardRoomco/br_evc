@@ -1,4 +1,5 @@
 import { Clipboard, Mail, HelpCircle, CheckCircle } from 'lucide-react';
+import { Sidebar } from '@/components/Sidebar';
 
 export default function Home() {
   return (
@@ -55,6 +56,9 @@ export default function Home() {
         {/* Logo placeholder - we'll add this later */}
         <div className="w-[400px] h-[100px] opacity-20 bg-gray-200"></div>
       </main>
+
+      {/* Right Sidebar */}
+      <Sidebar />
     </main>
   );
 }
