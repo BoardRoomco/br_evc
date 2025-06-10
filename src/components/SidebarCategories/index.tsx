@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { CategoryButton } from './CategoryButton';
+import { SubCategoryList } from './SubCategoryList';
 
 const categories = [
   { id: 'ac-dc', label: 'AC/DC Converters' },
@@ -8,9 +10,10 @@ const categories = [
 ];
 
 export const SidebarCategories = () => {
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+
   const handleCategoryClick = (categoryId: string) => {
-    console.log(`Category clicked: ${categoryId}`);
-    // We'll implement subcategory logic here later
+    setSelectedCategory(selectedCategory === categoryId ? null : categoryId);
   };
 
   return (
@@ -22,11 +25,15 @@ export const SidebarCategories = () => {
       padding: '20px 0',
     }}>
       {categories.map(category => (
-        <CategoryButton
-          key={category.id}
-          label={category.label}
-          onClick={() => handleCategoryClick(category.id)}
-        />
+        <div key={category.id} style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+          <CategoryButton
+            label={category.label}
+            onClick={() => handleCategoryClick(category.id)}
+          />
+          {selectedCategory === category.id && (
+            <SubCategoryList categoryId={category.id} />
+          )}
+        </div>
       ))}
     </div>
   );
