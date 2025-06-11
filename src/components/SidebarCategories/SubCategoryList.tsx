@@ -99,11 +99,6 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
 
   const dcDcComponents: Component[] = [
     {
-      id: 'dc-dc-1',
-      name: 'Buck Converter',
-      imageUrl: '/images/dc-dc-1.svg'
-    },
-    {
       id: 'dc-dc-2',
       name: 'Dual Active Bridge ',
       imageUrl: '/images/dc-dc-2.svg'
@@ -113,11 +108,6 @@ export const SubCategoryList = ({ categoryId }: SubCategoryListProps) => {
       name: 'Buck-Boost Converter',
       imageUrl: '/images/dc-dc-3.svg'
     },
-    {
-      id: 'dc-dc-4',
-      name: 'Flyback Converter',
-      imageUrl: '/images/dc-dc-4.svg'
-    }
   ];
 
   if (categoryId === 'ac-dc') {

@@ -16,6 +16,7 @@ import ReactFlow, {
   useReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
+import { scoreEVCAssessment } from './EvcAssessment';
 import 'reactflow/dist/style.css';
 
 const initialNodes: Node[] = [
@@ -68,7 +69,11 @@ const initialNodes: Node[] = [
 
 const initialEdges: Edge[] = [];
 
-const FlowContent = () => {
+interface CanvasProps {
+  onScore?: (score: number) => void;
+}
+
+const FlowContent = ({ onScore }: CanvasProps) => {
   const [nodes, setNodes] = useState<Node[]>(initialNodes);
   const [edges, setEdges] = useState<Edge[]>(initialEdges);
   const { getNodes } = useReactFlow();
@@ -149,6 +154,16 @@ const FlowContent = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [getNodes]);
 
+  const handleScore = useCallback(() => {
+    const result = scoreEVCAssessment(nodes, edges);
+    onScore?.(result.score);
+  }, [nodes, edges, onScore]);
+
+  // Update score whenever nodes or edges change
+  useEffect(() => {
+    handleScore();
+  }, [handleScore]);
+
   return (
     <div className="w-full h-[calc(100vh-2rem)]">
       <ReactFlow
@@ -171,10 +186,10 @@ const FlowContent = () => {
   );
 };
 
-export const Canvas = () => {
+export const Canvas = (props: CanvasProps) => {
   return (
     <ReactFlowProvider>
-      <FlowContent />
+      <FlowContent {...props} />
     </ReactFlowProvider>
   );
 }; 

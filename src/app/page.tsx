@@ -5,9 +5,22 @@ import { Clipboard, Mail, HelpCircle, CheckCircle } from 'lucide-react';
 import { Sidebar } from '@/components/Sidebar';
 import { Canvas } from '@/components/Canvas';
 import { MessagesOverlay } from '@/components/Overlays/MessagesOverlay';
+import { IntroductionOverlay } from '@/components/Overlays/IntroductionOverlay';
+import { SubmitOverlay } from '@/components/Overlays/SubmitOverlay';
 
 export default function Home() {
   const [activeOverlay, setActiveOverlay] = useState<'layout' | 'messages' | 'help' | 'submit' | null>(null);
+  const [isAssessmentStarted, setIsAssessmentStarted] = useState(false);
+  const [score, setScore] = useState(0);
+  
+  const handleStartAssessment = () => {
+    setIsAssessmentStarted(true);
+    setActiveOverlay(null);
+  };
+
+  const handleSubmit = () => {
+    setActiveOverlay('submit');
+  };
 
   return (
     <main className="min-h-screen bg-[#f1f8fa]">
@@ -41,7 +54,7 @@ export default function Home() {
         <button 
           className="p-4 transition-colors cursor-pointer"
           aria-label="Submit"
-          onClick={() => setActiveOverlay('submit')}
+          onClick={handleSubmit}
         >
           <div className="flex flex-col items-center gap-1">
             <CheckCircle className="w-16 h-16 text-black" strokeWidth={1.0} />
@@ -52,7 +65,7 @@ export default function Home() {
 
       {/* Main Content Area */}
       <div className="w-[calc(100vw-416px)] ml-32">
-        <Canvas />
+        <Canvas onScore={setScore} />
       </div>
 
       {/* Right Sidebar */}
@@ -62,6 +75,16 @@ export default function Home() {
       <MessagesOverlay 
         isOpen={activeOverlay === 'messages'} 
         onClose={() => setActiveOverlay(null)} 
+      />
+      <IntroductionOverlay
+        isOpen={!isAssessmentStarted}
+        onClose={() => setActiveOverlay(null)}
+        onStart={handleStartAssessment}
+      />
+      <SubmitOverlay
+        isOpen={activeOverlay === 'submit'}
+        onClose={() => setActiveOverlay(null)}
+        score={score}
       />
     </main>
   );
