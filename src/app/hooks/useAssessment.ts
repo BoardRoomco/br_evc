@@ -2,9 +2,17 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
+interface Question {
+  id: string;
+  question: string;
+  answer?: string;  // Optional because it will be populated when user responds
+  timestamp?: number;  // Optional because it will be set when answered
+}
+
 interface AssessmentData {
   timeScore: number;      // How long the assessment took in seconds
-  isCorrect: boolean;     // Whether the main assessment question was answered correctly
+  score: number;         // Score from 0-1
+  questionAnswerPairs: Question[];  // All questions and their answers
 }
 
 interface UseAssessmentProps {
@@ -21,7 +29,19 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
   // Assessment state
   const [isStarted, setIsStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [score, setScore] = useState(0);
+
+  // Predefined questions
+  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<Question[]>([
+    {
+      id: '1',
+      question: 'Could you please clarify your approach to the vehicle-to-everything functionality?'
+    },
+    {
+      id: '2',
+      question: 'What safety measures are you considering for the AC/DC conversion?'
+    }
+  ]);
 
   // Start the assessment
   const startAssessment = useCallback(() => {
@@ -30,9 +50,18 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     setStartTime(Date.now());
   }, []);
 
-  // Set whether the main question was answered correctly
-  const setAnswerCorrectness = useCallback((correct: boolean) => {
-    setIsCorrect(correct);
+  // Update score
+  const updateScore = useCallback((newScore: number) => {
+    setScore(newScore);
+  }, []);
+
+  // Store answer for a question
+  const storeAnswer = useCallback((questionId: string, answer: string) => {
+    setQuestionAnswerPairs(prev => prev.map(q => 
+      q.id === questionId 
+        ? { ...q, answer, timestamp: Date.now() }
+        : q
+    ));
   }, []);
 
   // Complete the assessment
@@ -44,7 +73,8 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     
     const assessmentData: AssessmentData = {
       timeScore: elapsedTime,
-      isCorrect,
+      score,
+      questionAnswerPairs,
     };
 
     if (onComplete) {
@@ -52,7 +82,7 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     }
 
     return assessmentData;
-  }, [isRunning, elapsedTime, isCorrect, onComplete]);
+  }, [isRunning, elapsedTime, score, questionAnswerPairs, onComplete]);
 
   // Timer effect
   useEffect(() => {
@@ -77,11 +107,13 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     isCompleted,
     isRunning,
     elapsedTime,
-    isCorrect,
+    score,
+    questionAnswerPairs,
 
     // Actions
     startAssessment,
-    setAnswerCorrectness,
+    updateScore,
+    storeAnswer,
     completeAssessment,
   };
 };

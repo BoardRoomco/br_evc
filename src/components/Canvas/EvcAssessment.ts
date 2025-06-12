@@ -8,32 +8,30 @@ const idealSequence = [
   'Vehicle'
 ];
 
+// Optimized sequence building function
+const buildSequence = (nodes: Node[], edges: Edge[]): string[] => {
+  // Create maps for O(1) lookups
+  const nodeMap = new Map(nodes.map(node => [node.id, node]));
+  const edgeMap = new Map(edges.map(edge => [edge.source, edge]));
+  
+  const sequence: string[] = [];
+  // Find starting node (the one that's only a source, not a target)
+  let currentNode = nodes.find(node => !edges.some(edge => edge.target === node.id));
+  
+  while (currentNode) {
+    sequence.push(currentNode.data.label);
+    const nextEdge = edgeMap.get(currentNode.id);
+    if (!nextEdge) break;
+    currentNode = nodeMap.get(nextEdge.target);
+  }
+  
+  return sequence;
+};
+
 // Scoring function
 export function scoreEVCAssessment(nodes: Node[], edges: Edge[]) {
-  // Get the actual sequence of components based on the connections
-  const actualSequence: string[] = [];
-  
-  // Find the starting node (the one that's only a source, not a target)
-  const startNode = nodes.find(node => 
-    !edges.some(edge => edge.target === node.id)
-  );
-  
-  if (startNode) {
-    actualSequence.push(startNode.data.label);
-    
-    // Follow the connections to build the sequence
-    let currentNode = startNode;
-    while (true) {
-      const nextEdge = edges.find(edge => edge.source === currentNode.id);
-      if (!nextEdge) break;
-      
-      const nextNode = nodes.find(node => node.id === nextEdge.target);
-      if (!nextNode) break;
-      
-      actualSequence.push(nextNode.data.label);
-      currentNode = nextNode;
-    }
-  }
+  // Get the actual sequence using optimized function
+  const actualSequence = buildSequence(nodes, edges);
 
   // Count how many components are in the correct position
   let correctComponents = 0;

@@ -7,19 +7,33 @@ import { Canvas } from '@/components/Canvas';
 import { MessagesOverlay } from '@/components/Overlays/MessagesOverlay';
 import { IntroductionOverlay } from '@/components/Overlays/IntroductionOverlay';
 import { SubmitOverlay } from '@/components/Overlays/SubmitOverlay';
+import { HelpOverlay } from '@/components/Overlays/HelpOverlay';
+import { useAssessment } from './hooks/useAssessment';
 
 export default function Home() {
   const [activeOverlay, setActiveOverlay] = useState<'layout' | 'messages' | 'help' | 'submit' | null>(null);
   const [isAssessmentStarted, setIsAssessmentStarted] = useState(false);
   const [score, setScore] = useState(0);
   
+  const { startAssessment, updateScore, completeAssessment, storeAnswer } = useAssessment({
+    assessmentId: '1',
+    onComplete: (data) => {
+      console.log('Assessment completed:', data);
+    }
+  });
+  
   const handleStartAssessment = () => {
     setIsAssessmentStarted(true);
     setActiveOverlay(null);
+    startAssessment();
   };
 
   const handleSubmit = () => {
     setActiveOverlay('submit');
+  };
+
+  const handleEmailResponse = (emailId: string, response: string) => {
+    storeAnswer(emailId, response);
   };
 
   return (
@@ -74,7 +88,8 @@ export default function Home() {
       {/* Overlays */}
       <MessagesOverlay 
         isOpen={activeOverlay === 'messages'} 
-        onClose={() => setActiveOverlay(null)} 
+        onClose={() => setActiveOverlay(null)}
+        onResponseSubmit={handleEmailResponse}
       />
       <IntroductionOverlay
         isOpen={!isAssessmentStarted}
@@ -85,6 +100,10 @@ export default function Home() {
         isOpen={activeOverlay === 'submit'}
         onClose={() => setActiveOverlay(null)}
         score={score}
+      />
+      <HelpOverlay
+        isOpen={activeOverlay === 'help'}
+        onClose={() => setActiveOverlay(null)}
       />
     </main>
   );
