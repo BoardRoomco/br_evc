@@ -2,17 +2,16 @@
 
 import { useState, useEffect, useCallback } from 'react';
 
-interface Question {
-  id: string;
+interface WrittenAnswer {
+  question_id: string;
   question: string;
-  answer?: string;  // Optional because it will be populated when user responds
-  timestamp?: number;  // Optional because it will be set when answered
+  answer: string;
 }
 
 interface AssessmentData {
-  timeScore: number;      // How long the assessment took in seconds
-  score: number;         // Score from 0-1
-  questionAnswerPairs: Question[];  // All questions and their answers
+  time_elapsed: number;      // Time taken in seconds
+  main_question_score: number;  // Score from 0-1
+  written_answers: WrittenAnswer[];  // All questions and their answers
 }
 
 interface UseAssessmentProps {
@@ -32,14 +31,16 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
   const [score, setScore] = useState(0);
 
   // Predefined questions
-  const [questionAnswerPairs, setQuestionAnswerPairs] = useState<Question[]>([
+  const [writtenAnswers, setWrittenAnswers] = useState<WrittenAnswer[]>([
     {
-      id: '1',
-      question: 'Could you please clarify your approach to the vehicle-to-everything functionality?'
+      question_id: 'q1',
+      question: 'Could you please clarify your approach to the vehicle-to-everything functionality?',
+      answer: ''
     },
     {
-      id: '2',
-      question: 'What safety measures are you considering for the AC/DC conversion?'
+      question_id: 'q2',
+      question: 'What safety measures are you considering for the AC/DC conversion?',
+      answer: ''
     }
   ]);
 
@@ -57,9 +58,9 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
 
   // Store answer for a question
   const storeAnswer = useCallback((questionId: string, answer: string) => {
-    setQuestionAnswerPairs(prev => prev.map(q => 
-      q.id === questionId 
-        ? { ...q, answer, timestamp: Date.now() }
+    setWrittenAnswers(prev => prev.map(q => 
+      q.question_id === questionId 
+        ? { ...q, answer }
         : q
     ));
   }, []);
@@ -72,9 +73,9 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     setIsCompleted(true);
     
     const assessmentData: AssessmentData = {
-      timeScore: elapsedTime,
-      score,
-      questionAnswerPairs,
+      time_elapsed: elapsedTime,
+      main_question_score: score,
+      written_answers: writtenAnswers.filter(q => q.answer.trim() !== '')
     };
 
     if (onComplete) {
@@ -82,7 +83,7 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     }
 
     return assessmentData;
-  }, [isRunning, elapsedTime, score, questionAnswerPairs, onComplete]);
+  }, [isRunning, elapsedTime, score, writtenAnswers, onComplete]);
 
   // Timer effect
   useEffect(() => {
@@ -108,7 +109,7 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     isRunning,
     elapsedTime,
     score,
-    questionAnswerPairs,
+    writtenAnswers,
 
     // Actions
     startAssessment,

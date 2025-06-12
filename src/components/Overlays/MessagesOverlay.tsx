@@ -23,7 +23,7 @@ export const MessagesOverlay = ({ isOpen, onClose, onResponseSubmit }: MessagesO
   
   const emails: Email[] = [
     {
-      id: '1',
+      id: 'q1',
       subject: 'EV Charger Design Requirements',
       from: 'Topi',
       timestamp: 'Today, 2:30 PM',
@@ -37,14 +37,14 @@ Thanks,
 Topi`
     },
     {
-      id: '2',
+      id: 'q2',
       subject: 'Inquiry about X',
       from: 'Andrew',
       timestamp: 'Today, 3:15 PM',
       content: 'Could you please clarify your approach to the vehicle-to-everything functionality?'
     },
     {
-      id: '3',
+      id: 'q3',
       subject: 'URGENT REQUEST',
       from: 'Andrew',
       timestamp: 'Today, 3:45 PM',
@@ -55,7 +55,7 @@ Topi`
   // Set main email as selected when overlay opens
   useEffect(() => {
     if (isOpen && !selectedEmail) {
-      setSelectedEmail('1');
+      setSelectedEmail('q1');
     }
   }, [isOpen, selectedEmail]);
 
@@ -125,7 +125,7 @@ Topi`
                         {email.content}
                       </div>
                       
-                      {email.id !== '1' && (
+                      {email.id !== 'q1' && (
                         <div className="mt-6">
                           <form onSubmit={(e) => handleResponseSubmit(e, email.id)}>
                             <textarea

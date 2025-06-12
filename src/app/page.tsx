@@ -29,11 +29,18 @@ export default function Home() {
   };
 
   const handleSubmit = () => {
+    const assessmentData = completeAssessment();
+    console.log('Assessment completed:', assessmentData);
     setActiveOverlay('submit');
   };
 
   const handleEmailResponse = (emailId: string, response: string) => {
     storeAnswer(emailId, response);
+  };
+
+  const handleScoreUpdate = (newScore: number) => {
+    setScore(newScore);
+    updateScore(newScore);
   };
 
   return (
@@ -79,7 +86,7 @@ export default function Home() {
 
       {/* Main Content Area */}
       <div className="w-[calc(100vw-416px)] ml-32">
-        <Canvas onScore={setScore} />
+        <Canvas onScore={handleScoreUpdate} />
       </div>
 
       {/* Right Sidebar */}
