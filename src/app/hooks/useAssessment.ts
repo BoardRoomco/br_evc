@@ -66,7 +66,7 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
   }, []);
 
   // Complete the assessment
-  const completeAssessment = useCallback(() => {
+  const completeAssessment = useCallback(async () => {
     if (!isRunning) return;
 
     setIsRunning(false);
@@ -79,7 +79,7 @@ export const useAssessment = ({ assessmentId, onComplete }: UseAssessmentProps) 
     };
 
     if (onComplete) {
-      onComplete(assessmentData);
+      await onComplete(assessmentData);
     }
 
     return assessmentData;

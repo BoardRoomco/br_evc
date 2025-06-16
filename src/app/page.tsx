@@ -14,11 +14,29 @@ export default function Home() {
   const [activeOverlay, setActiveOverlay] = useState<'layout' | 'messages' | 'help' | 'submit' | null>(null);
   const [isAssessmentStarted, setIsAssessmentStarted] = useState(false);
   const [score, setScore] = useState(0);
+  const [scoringResult, setScoringResult] = useState<any>(null);
   
   const { startAssessment, updateScore, completeAssessment, storeAnswer } = useAssessment({
     assessmentId: '1',
-    onComplete: (data) => {
-      console.log('Assessment completed:', data);
+    onComplete: async (data) => {
+      try {
+        const response = await fetch('https://7mikmoichj.execute-api.us-east-2.amazonaws.com/prodstage/score', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+        setScoringResult(result);
+      } catch (error) {
+        setScoringResult({ error: 'Failed to get scoring result' });
+      }
     }
   });
   
@@ -28,9 +46,8 @@ export default function Home() {
     startAssessment();
   };
 
-  const handleSubmit = () => {
-    const assessmentData = completeAssessment();
-    console.log('Assessment completed:', assessmentData);
+  const handleSubmit = async () => {
+    await completeAssessment();
     setActiveOverlay('submit');
   };
 
@@ -107,6 +124,7 @@ export default function Home() {
         isOpen={activeOverlay === 'submit'}
         onClose={() => setActiveOverlay(null)}
         score={score}
+        scoringResult={scoringResult}
       />
       <HelpOverlay
         isOpen={activeOverlay === 'help'}
